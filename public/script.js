@@ -3,7 +3,6 @@ const videoGrid = document.getElementById('video-grid');
 const myVideo = document.createElement('video');
 myVideo.muted = true;
 let peers = {};
-
 var peer = new Peer(undefined,{   //we undefine this because peer server create it's own user it
   //path: '/peerjs',
 	host: '/',
@@ -11,14 +10,14 @@ var peer = new Peer(undefined,{   //we undefine this because peer server create 
 });
 
 let myVideoStream;
-navigator.mediaDevices.getUserMedia({     //by using this we can access user device media(audio, video) 
+navigator.mediaDevices.getUserMedia({     //by using this we can access user device media(audio, video)
 	video: true,
 	audio: false
 }).then(stream =>{                        //in this promice we sended media in stream
     addVideoStream(myVideo, stream);
     myVideoStream = stream;
     peer.on('call', call =>{               //here user system answer call and send there video stream to us
-    	console.log("answered");        
+    	//console.log("answered");
     	call.answer(stream);               //via this send video stream to caller
     	const video = document.createElement('video');
     	call.on('stream', userVideoStream =>{
@@ -26,27 +25,27 @@ navigator.mediaDevices.getUserMedia({     //by using this we can access user dev
     	})
     })
 
-    socket.on('user-connected', (userId) =>{   //userconnected so we now ready to share 
-	    console.log('user ID fetch connection: '+ userId); //video stream
+    socket.on('user-connected', (userId) =>{   //userconnected so we now ready to share
+	    //console.log('user ID fetch connection: '+ userId); //video stream
       connectToNewUser(userId, stream);        //by this fuction which call user
-    }); 
+    });
 })
 
-socket.on('user-disconnected', userId =>{   //userconnected so we now ready to share 
+socket.on('user-disconnected', userId =>{   //userconnected so we now ready to share
       if(peers[userId]) peers[userId].close();
-      console.log('user ID fetch Disconnect: '+ userId); //video stream
+      //console.log('user ID fetch Disconnect: '+ userId); //video stream
               //by this fuction which call user
-}); 
-
+});
 //if someone try to join room
 peer.on('open', id =>{
  	socket.emit('join-room', ROOM_ID, id); //if someone join room send roomid and userid to server
 })
 
 const connectToNewUser = (userId, stream) =>{
-	   console.log('User-connected :-'+userId);
+	   //console.log('User-connected :-'+userId);
      let call =  peer.call(userId, stream);       //we call new user and sended our video stream to him
      const video = document.createElement('video');
+
      call.on('stream', userVideoStream => {
           addVideoStream(video, userVideoStream);  // Show stream in some video/canvas element.
       })
@@ -121,5 +120,5 @@ const unsetVideoButton = () =>{
 //code for disconnect
 const disconnectNow = ()=>{
     window.location = "http://localhost:3000/";
-    
+
 }
